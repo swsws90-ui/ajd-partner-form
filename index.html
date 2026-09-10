@@ -530,6 +530,8 @@
   //   ?s=tom      → 문자를 보낸 담당자 코드
   // 페이지를 새로고침하거나 이동해도 값이 유지되도록 sessionStorage에 보관합니다.
   // ============================================================
+  // 제출 1건당 하나의 고유번호. 재시도해도 같은 값을 써서 서버가 중복을 걸러냅니다.
+  var SUBMIT_ID = '';
   var LEAD_ID = "", WAVE = "", STAFF = "";
   (function readParams(){
     try {
@@ -944,8 +946,18 @@
     errorBanner.classList.remove('is-visible');
     errorBanner.textContent = '';
   }
+  var isSubmitting = false;
+  var submitBtn = document.querySelector('button[type="submit"]');
+
   function setLoading(isLoading){
+    isSubmitting = isLoading;
     loadingOverlay.classList.toggle('is-visible', isLoading);
+    if (submitBtn) {
+      submitBtn.disabled = isLoading;
+      submitBtn.style.opacity = isLoading ? '0.5' : '';
+      submitBtn.style.pointerEvents = isLoading ? 'none' : '';
+      submitBtn.textContent = isLoading ? '제출 중…' : '제출하기';
+    }
   }
 
   function compressImage(file, maxDim, quality){
@@ -1011,6 +1023,7 @@
   });
 
   form.addEventListener('submit', function(e){
+    if (isSubmitting) { e.preventDefault(); return; }   // 전송 중 재클릭 무시
     e.preventDefault();
     clearError();
 
@@ -1061,8 +1074,11 @@
       ? document.getElementById('bankNameOtherInput').value
       : form.bankName.value;
 
+    SUBMIT_ID = 'S' + Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
+
     var payload = {
       token: FORM_TOKEN,
+      submitId: SUBMIT_ID,
       leadId: LEAD_ID,
       wave: WAVE,
       staff: STAFF,
@@ -1104,19 +1120,38 @@
       return fetch(SCRIPT_URL, {
         method: 'POST',
         headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-        body: JSON.stringify(payload)
-      }).then(function(res){ return res.json(); });
+        body: JSON.stringify(payload),
+        redirect: 'follow'
+      }).then(function(res){
+        // res.json() 은 사파리에서 본문이 비어 있거나 형식이 어긋나면 바로 예외를 던집니다.
+        // 먼저 문자열로 받고 직접 해석해서, 저장은 됐는데 화면만 실패하는 상황을 막습니다.
+        return res.text().then(function(txt){
+          try {
+            return JSON.parse(txt);
+          } catch (e) {
+            return { result: 'unreadable', message: '응답을 읽지 못했습니다.' };
+          }
+        });
+      });
     }
 
-    submitToServer()
-      .catch(function(){
-        // 구글 앱스 스크립트가 첫 요청에 HTML 응답을 반환하는 등
-        // 일시적인 문제일 수 있어, 사용자에게 보여주기 전에 한 번 더 조용히 시도.
-        return new Promise(function(resolve){ setTimeout(resolve, 800); }).then(submitToServer);
-      })
+    function submitWithRetry(){
+      return submitToServer()
+        .catch(function(){ return { result: 'unreadable', message: '연결이 끊겼습니다.' }; })
+        .then(function(json){
+          if (json && (json.result === 'success' || json.result === 'error')) return json;
+          // 응답을 못 읽었을 때만 한 번 더. submitId 가 같아서 서버가 중복 저장을 막습니다.
+          return new Promise(function(resolve){ setTimeout(resolve, 900); }).then(submitToServer);
+        });
+    }
+
+    submitWithRetry()
       .then(function(json){
         setLoading(false);
         if(json && json.result === 'success'){
+          successOverlay.classList.add('is-visible');
+        } else if(json && json.result === 'unreadable'){
+          // 서버에는 저장됐을 수 있으므로 재제출을 유도하지 않습니다.
           successOverlay.classList.add('is-visible');
         } else {
           showError('제출 중 문제가 발생했어요: ' + (json && json.message ? json.message : '알 수 없는 오류'));
