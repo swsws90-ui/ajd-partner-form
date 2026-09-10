@@ -527,16 +527,19 @@
   // URL 파라미터 수신
   //   ?id=M01234  → 업체ID (문자 발송 대상 식별)
   //   ?w=1        → 문자 차수
+  //   ?s=tom      → 문자를 보낸 담당자 코드
   // 페이지를 새로고침하거나 이동해도 값이 유지되도록 sessionStorage에 보관합니다.
   // ============================================================
-  var LEAD_ID = "", WAVE = "";
+  var LEAD_ID = "", WAVE = "", STAFF = "";
   (function readParams(){
     try {
       var qs = new URLSearchParams(location.search);
       LEAD_ID = qs.get('id') || sessionStorage.getItem('ajd_leadId') || '';
       WAVE    = qs.get('w')  || sessionStorage.getItem('ajd_wave')   || '';
+      STAFF   = qs.get('s')  || sessionStorage.getItem('ajd_staff')  || '';
       if(LEAD_ID) sessionStorage.setItem('ajd_leadId', LEAD_ID);
       if(WAVE)    sessionStorage.setItem('ajd_wave', WAVE);
+      if(STAFF)   sessionStorage.setItem('ajd_staff', STAFF);
     } catch(e){ /* 시크릿 모드 등에서 sessionStorage 차단 시 무시 */ }
   })();
 
@@ -1062,6 +1065,7 @@
       token: FORM_TOKEN,
       leadId: LEAD_ID,
       wave: WAVE,
+      staff: STAFF,
       pageUrl: location.href,
       company: form.company.value,
       owner: form.owner.value,
