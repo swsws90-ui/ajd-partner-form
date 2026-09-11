@@ -184,7 +184,7 @@
   .file-field:last-child{ margin-bottom:0; padding-bottom:0; border-bottom:none; }
   .file-field__head{ display:flex; align-items:center; justify-content:space-between; margin-bottom:4px; }
   .file-field__head strong{ font-size:14px; color:var(--ink-text); }
-  .file-field__desc{ font-size:12px; color:var(--muted-light); margin-bottom:8px; }
+  .file-field__desc{ font-size:12px; color:var(--muted-light); margin-bottom:8px; line-height:1.6; }
   .file-field__status{
     font-size:10.5px; font-weight:600; letter-spacing:.02em; padding:3px 8px;
     border-radius:99px; background:var(--brand-100); color:var(--brand-700); white-space:nowrap;
@@ -462,7 +462,7 @@
               <strong>신분증 사본 사진</strong>
               <span class="file-field__status">선택</span>
             </div>
-            <p class="file-field__desc">대표자 신분증</p>
+            <p class="file-field__desc">대표자 신분증 · 주민등록번호 뒷자리는 가리고 올려주세요<br>부담스러우시면 담당자 통화 후 제출도 가능합니다</p>
             <div class="file-field__buttons">
               <input type="file" id="file_idCard_camera" accept="image/*" capture="environment" style="display:none" />
               <label for="file_idCard_camera" class="file-field__btn" data-type="camera"><svg class="icon"><use href="#icon-camera"/></svg><span>사진 촬영</span></label>
