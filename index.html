@@ -457,6 +457,21 @@
             <div class="file-field__preview" hidden><img alt="" /><span></span><button type="button">삭제</button></div>
           </div>
 
+          <div class="file-field" data-field="idCard" data-required="false">
+            <div class="file-field__head">
+              <strong>신분증 사본 사진</strong>
+              <span class="file-field__status">선택</span>
+            </div>
+            <p class="file-field__desc">대표자 신분증</p>
+            <div class="file-field__buttons">
+              <input type="file" id="file_idCard_camera" accept="image/*" capture="environment" style="display:none" />
+              <label for="file_idCard_camera" class="file-field__btn" data-type="camera"><svg class="icon"><use href="#icon-camera"/></svg><span>사진 촬영</span></label>
+              <input type="file" id="file_idCard_gallery" accept="image/*" style="display:none" />
+              <label for="file_idCard_gallery" class="file-field__btn file-field__btn--ghost" data-type="gallery"><svg class="icon"><use href="#icon-gallery"/></svg><span>앨범에서 선택</span></label>
+            </div>
+            <div class="file-field__preview" hidden><img alt="" /><span></span><button type="button">삭제</button></div>
+          </div>
+
           <div class="file-field" data-field="insurancePolicy" data-required="false">
             <div class="file-field__head">
               <strong>보험증권 사진</strong>
@@ -1242,6 +1257,7 @@
       bizCert: '사업자등록증',
       permit: '허가증',
       bankbook: '통장 사본',
+      idCard: '신분증',
       insurancePolicy: '보험증권'
     };
     Object.keys(fileState).forEach(function(key){
