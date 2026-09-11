@@ -477,7 +477,7 @@
         <div class="card">
           <label class="field field--check">
             <input type="checkbox" name="agree" required />
-            <span class="field__label">개인정보 수집·이용에 동의합니다. (파트너 심사 목적, 심사 완료 후 3년간 보관)</span>
+            <span class="field__label">개인정보 수집·이용에 동의합니다. (파트너 심사 목적, 심사 완료 후 1년간 보관)</span>
           </label>
         </div>
 
@@ -489,7 +489,7 @@
 
 <footer class="footer">
   <div class="section__inner">
-    <p>이 페이지는 템플릿입니다. 실제 아정당 정책·연락처와는 무관하니, 사용 전 실제 정보로 교체해주세요. © 2026 아정당</p>
+    <p>아정당 이사 파트너 서류 제출 · 제출하신 서류는 파트너 심사 목적으로만 사용됩니다.<br>© 주식회사 아정당이사</p>
   </div>
 </footer>
 
@@ -1298,7 +1298,7 @@
       })
       .catch(function(err){
         setLoading(false);
-        showError('네트워크 문제로 제출하지 못했어요. 다시 시도해주시거나 1588-0000으로 연락해주세요. (' + err.message + ')');
+        showError('네트워크 문제로 제출하지 못했어요. 잠시 후 다시 시도해주세요. 계속 안 되시면 안내받으신 담당자에게 연락 부탁드립니다.');
       });
   });
 
