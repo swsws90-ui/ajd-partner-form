@@ -191,11 +191,28 @@
   .svc-opt{ position:relative; display:block; }
   .svc-opt input{ position:absolute; opacity:0; width:0; height:0; }
   .svc-opt span{
-    display:flex; align-items:center; justify-content:center; text-align:center;
-    min-height:56px; padding:12px 8px; border:1.5px solid var(--border-color);
-    border-radius:var(--radius-m); background:#fff; font-size:15px; font-weight:600;
-    color:var(--ink-text); cursor:pointer; transition:.12s; line-height:1.35;
+    display:flex; flex-direction:column; align-items:center; justify-content:center;
+    text-align:center; gap:4px; min-height:76px; padding:14px 10px;
+    border:1.5px solid var(--border-color); border-radius:var(--radius-m); background:#fff;
+    color:var(--ink-text); cursor:pointer; transition:.12s;
   }
+  .svc-opt span b{ font-size:16px; font-weight:700; line-height:1.3; }
+  .svc-opt span small{ font-size:11.5px; font-weight:500; color:var(--muted-dark); line-height:1.45; }
+  .svc-opt input:checked + span small{ color:var(--brand-700); opacity:.85; }
+
+  .svc-bar{
+    position:sticky; top:0; z-index:40; display:flex; align-items:center; gap:10px;
+    margin:0 0 16px; padding:11px 16px; border-radius:var(--radius-m);
+    background:var(--brand-100); border:1.5px solid var(--brand-600);
+  }
+  .svc-bar__txt{ font-size:14px; color:var(--brand-800); }
+  .svc-bar__txt b{ font-weight:700; }
+  .svc-bar__btn{
+    margin-left:auto; font-family:inherit; font-size:13px; font-weight:600;
+    padding:7px 14px; border-radius:var(--radius-s);
+    border:1.5px solid var(--brand-600); background:#fff; color:var(--brand-700); cursor:pointer;
+  }
+  .svc-bar__btn:hover{ background:var(--brand-050); }
   .svc-opt span:hover{ border-color:#CBD6E8; }
   .svc-opt input:checked + span{
     border-color:var(--brand-600); background:var(--brand-100);
@@ -312,12 +329,23 @@
       <form id="partnerForm" novalidate>
 
         <div class="card" id="svcCard">
-          <h2><svg class="icon"><use href="#icon-user"/></svg> 어떤 서비스를 하시나요?</h2>
-          <p class="file-field__desc">고르신 서비스에 맞는 항목만 아래에 나옵니다.</p>
+          <h2><svg class="icon"><use href="#icon-user"/></svg> 어떤 일을 하시는 업체인가요?</h2>
+          <p class="file-field__desc">고르신 쪽에 맞는 항목만 아래에 나옵니다.</p>
           <div class="svc-pick">
-            <label class="svc-opt"><input type="radio" name="bizType" value="이사" required /><span>이사</span></label>
-            <label class="svc-opt"><input type="radio" name="bizType" value="청소" /><span>청소</span></label>
+            <label class="svc-opt">
+              <input type="radio" name="bizType" value="이사" required />
+              <span><b>이사 업체</b><small>가정이사 · 소형이사 · 사무실이사</small></span>
+            </label>
+            <label class="svc-opt">
+              <input type="radio" name="bizType" value="청소" />
+              <span><b>청소 업체</b><small>이사청소 · 거주청소 · 사업장청소</small></span>
+            </label>
           </div>
+        </div>
+
+        <div class="svc-bar" id="svcBar" hidden>
+          <span class="svc-bar__txt"><b id="svcBarName"></b>로 신청 중</span>
+          <button type="button" class="svc-bar__btn" id="svcBarChange">변경</button>
         </div>
 
         <div class="card">
@@ -970,10 +998,24 @@
   (function(){
     var radios = document.querySelectorAll('input[name="bizType"]');
 
+    var card    = document.getElementById('svcCard');
+    var bar     = document.getElementById('svcBar');
+    var barName = document.getElementById('svcBarName');
+
     function apply(){
       var v = '';
       for (var i = 0; i < radios.length; i++) if (radios[i].checked) v = radios[i].value;
       BIZ = v;
+
+      // 고르고 나면 선택 카드를 접고, 위쪽에 무엇으로 신청 중인지 남깁니다
+      if (v) {
+        card.hidden = true;
+        bar.hidden = false;
+        barName.textContent = v + ' 업체';
+      } else {
+        card.hidden = false;
+        bar.hidden = true;
+      }
       var showMove  = (v === '이사');
       var showClean = (v === '청소');
 
@@ -998,6 +1040,13 @@
     }
 
     for (var i = 0; i < radios.length; i++) radios[i].addEventListener('change', apply);
+
+    // [변경] 을 누르면 다시 고를 수 있게
+    document.getElementById('svcBarChange').addEventListener('click', function(){
+      for (var i = 0; i < radios.length; i++) radios[i].checked = false;
+      apply();
+      card.scrollIntoView({ behavior:'smooth', block:'start' });
+    });
 
     // 문자 링크의 ?t= 값으로 미리 골라둡니다 (t=move / clean)
     var t = (new URLSearchParams(location.search)).get('t');
