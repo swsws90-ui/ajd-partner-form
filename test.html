@@ -229,6 +229,14 @@
   }
   .mail-help p{ margin:0 0 6px; }
   .mail-help p:last-child{ margin-bottom:0; color:var(--muted-light); }
+  .mail-help__steps{ margin:8px 0 10px; padding-left:20px; }
+  .mail-help__steps li{ margin-bottom:5px; }
+  .mail-help__steps li:last-child{ margin-bottom:0; }
+  .mail-help__img{
+    display:block; width:100%; max-width:330px; height:auto;
+    margin:12px auto 14px; background:#fff;
+    border:1px solid var(--border-color); border-radius:var(--radius-m); padding:12px 10px;
+  }
   .svc-opt span:hover{ border-color:#CBD6E8; }
   .svc-opt input:checked + span{
     border-color:var(--brand-600); background:var(--brand-100);
@@ -519,8 +527,106 @@
           </button>
           <div class="mail-help" id="mailHelp" hidden>
             <p><b>유튜브를 보고 계시면 이메일 주소가 있습니다.</b></p>
-            <p>휴대폰에서 유튜브 앱을 열고 오른쪽 위 동그란 사진을 누르면
-               <b>@gmail.com</b> 으로 끝나는 주소가 보입니다.</p>
+            <ol class="mail-help__steps">
+              <li>휴대폰에서 <b>유튜브</b> 앱을 엽니다.</li>
+              <li>오른쪽 <b>아래</b>의 <b>내 페이지</b>를 누릅니다.</li>
+              <li>왼쪽 <b>위</b>의 <b>계정</b>을 누릅니다.</li>
+              <li>이름 아래에 <b>@gmail.com</b> 으로 끝나는 주소가 보입니다.</li>
+            </ol>
+            <svg class="mail-help__img" viewBox="0 0 340 556" role="img"
+                 aria-label="유튜브 앱에서 이메일 주소를 찾는 4단계 안내 그림"
+                 xmlns="http://www.w3.org/2000/svg">
+              <defs>
+                <style>
+                  .mg-n{fill:#135CE5}
+                  .mg-nt{fill:#fff;font:700 13px 'IBM Plex Sans KR',sans-serif}
+                  .mg-lb{fill:#1F2A44;font:600 12px 'IBM Plex Sans KR',sans-serif}
+                  .mg-ph{fill:#fff;stroke:#D5DCE7;stroke-width:1.5}
+                  .mg-sc{fill:#F6F8FC}
+                  .mg-dk{fill:#212B3A}
+                  .mg-bar{fill:#E3E8F0}
+                  .mg-txt{fill:#8A93A6;font:500 8px 'IBM Plex Sans KR',sans-serif}
+                  .mg-wt{fill:#fff;font:600 8px 'IBM Plex Sans KR',sans-serif}
+                  .mg-hi{fill:none;stroke:#FF5A1F;stroke-width:2.5;rx:5}
+                </style>
+              </defs>
+
+              <!-- 1 -->
+              <g transform="translate(0,0)">
+                <circle class="mg-n" cx="14" cy="14" r="13"/>
+                <text class="mg-nt" x="14" y="14" text-anchor="middle" dominant-baseline="central">1</text>
+                <text class="mg-lb" x="34" y="14" dominant-baseline="central">유튜브 앱 열기</text>
+                <rect class="mg-ph" x="20" y="34" width="120" height="206" rx="13"/>
+                <rect class="mg-sc" x="26" y="40" width="108" height="194" rx="9"/>
+                <rect x="46" y="66" width="26" height="26" rx="7" fill="#E53935"/>
+                <path d="M56 74 L66 79 L56 84 Z" fill="#fff"/>
+                <text class="mg-txt" x="59" y="100" text-anchor="middle">유튜브</text>
+                <rect x="88" y="66" width="26" height="26" rx="7" fill="#D5DCE7"/>
+                <rect x="46" y="112" width="26" height="26" rx="7" fill="#D5DCE7"/>
+                <rect x="88" y="112" width="26" height="26" rx="7" fill="#D5DCE7"/>
+                <rect class="mg-hi" x="41" y="61" width="36" height="46"/>
+                <rect x="34" y="196" width="92" height="30" rx="10" fill="#E7ECF3"/>
+                <circle cx="52"  cy="211" r="8" fill="#C6D0DE"/>
+                <circle cx="74"  cy="211" r="8" fill="#C6D0DE"/>
+                <circle cx="96"  cy="211" r="8" fill="#C6D0DE"/>
+              </g>
+
+              <!-- 2 -->
+              <g transform="translate(180,0)">
+                <circle class="mg-n" cx="14" cy="14" r="13"/>
+                <text class="mg-nt" x="14" y="14" text-anchor="middle" dominant-baseline="central">2</text>
+                <text class="mg-lb" x="34" y="6" dominant-baseline="central">오른쪽 아래</text>
+                <text class="mg-lb" x="34" y="22" dominant-baseline="central">내 페이지 누르기</text>
+                <rect class="mg-ph" x="20" y="34" width="120" height="206" rx="13"/>
+                <rect class="mg-dk" x="26" y="40" width="108" height="194" rx="9"/>
+                <rect x="36" y="52" width="34" height="8" rx="4" fill="#E53935"/>
+                <rect x="36" y="76" width="88" height="42" rx="5" fill="#33404F"/>
+                <rect x="36" y="126" width="88" height="42" rx="5" fill="#33404F"/>
+                <rect x="26" y="200" width="108" height="34" fill="#2A3543"/>
+                <circle cx="42"  cy="212" r="5" fill="#5A6675"/>
+                <circle cx="64"  cy="212" r="5" fill="#5A6675"/>
+                <circle cx="86"  cy="212" r="5" fill="#5A6675"/>
+                <circle cx="112" cy="210" r="7" fill="#7C4DFF"/>
+                <text class="mg-wt" x="112" y="225" text-anchor="middle" style="font:600 7px 'IBM Plex Sans KR',sans-serif;fill:#fff">내 페이지</text>
+                <rect class="mg-hi" x="95" y="199" width="34" height="32"/>
+              </g>
+
+              <!-- 3 -->
+              <g transform="translate(0,286)">
+                <circle class="mg-n" cx="14" cy="14" r="13"/>
+                <text class="mg-nt" x="14" y="14" text-anchor="middle" dominant-baseline="central">3</text>
+                <text class="mg-lb" x="34" y="6" dominant-baseline="central">왼쪽 위</text>
+                <text class="mg-lb" x="34" y="22" dominant-baseline="central">계정 누르기</text>
+                <rect class="mg-ph" x="20" y="34" width="120" height="206" rx="13"/>
+                <rect class="mg-dk" x="26" y="40" width="108" height="194" rx="9"/>
+                <rect x="36" y="52" width="34" height="16" rx="8" fill="#3B4756"/>
+                <text class="mg-wt" x="53" y="61" text-anchor="middle">계정</text>
+                <circle cx="46" cy="90" r="13" fill="#7C4DFF"/>
+                <rect x="66" y="84" width="46" height="7" rx="3.5" fill="#4A5666"/>
+                <rect x="66" y="96" width="30" height="6" rx="3" fill="#3B4756"/>
+                <rect x="36" y="120" width="88" height="8" rx="4" fill="#33404F"/>
+                <rect x="36" y="138" width="66" height="8" rx="4" fill="#33404F"/>
+                <rect x="36" y="156" width="76" height="8" rx="4" fill="#33404F"/>
+                <rect class="mg-hi" x="31" y="47" width="44" height="26"/>
+              </g>
+
+              <!-- 4 -->
+              <g transform="translate(180,286)">
+                <circle class="mg-n" cx="14" cy="14" r="13"/>
+                <text class="mg-nt" x="14" y="14" text-anchor="middle" dominant-baseline="central">4</text>
+                <text class="mg-lb" x="34" y="6" dominant-baseline="central">이름 아래</text>
+                <text class="mg-lb" x="34" y="22" dominant-baseline="central">주소 확인</text>
+                <rect class="mg-ph" x="20" y="34" width="120" height="206" rx="13"/>
+                <rect class="mg-dk" x="26" y="40" width="108" height="194" rx="9"/>
+                <rect x="33" y="62" width="98" height="66" rx="7" fill="#F6F8FC"/>
+                <text x="41" y="78" style="font:600 8px 'IBM Plex Sans KR',sans-serif;fill:#8A93A6">계정</text>
+                <text x="41" y="97" style="font:600 8.5px 'IBM Plex Sans KR',sans-serif;fill:#1F2A44">홍길동</text>
+                <text x="41" y="112" style="font:700 7.5px 'IBM Plex Sans KR',sans-serif;fill:#135CE5">hong12@gmail.com</text>
+                <rect class="mg-hi" x="37" y="88" width="90" height="32"/>
+                <rect x="36" y="146" width="88" height="8" rx="4" fill="#33404F"/>
+                <rect x="36" y="164" width="60" height="8" rx="4" fill="#33404F"/>
+              </g>
+            </svg>
             <p>찾기 어려우시면 비워두세요. 담당자가 통화할 때 함께 확인해 드립니다.</p>
           </div>
         </div>
