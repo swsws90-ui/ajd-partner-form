@@ -213,6 +213,22 @@
     border:1.5px solid var(--brand-600); background:#fff; color:var(--brand-700); cursor:pointer;
   }
   .svc-bar__btn:hover{ background:var(--brand-050); }
+
+  .mail-help__btn{
+    display:inline-flex; align-items:center; gap:5px; margin-top:2px;
+    font-family:inherit; font-size:13px; font-weight:600; color:var(--brand-600);
+    background:none; border:none; padding:4px 0; cursor:pointer; text-decoration:underline;
+    text-underline-offset:3px;
+  }
+  .mail-help__btn::before{ content:'▸'; transition:transform .15s; }
+  .mail-help__btn[aria-expanded="true"]::before{ transform:rotate(90deg); }
+  .mail-help{
+    margin-top:8px; padding:13px 15px; border-radius:var(--radius-m);
+    background:var(--brand-050); border:1px solid var(--brand-100);
+    font-size:13.5px; line-height:1.65; color:var(--ink-text);
+  }
+  .mail-help p{ margin:0 0 6px; }
+  .mail-help p:last-child{ margin-bottom:0; color:var(--muted-light); }
   .svc-opt span:hover{ border-color:#CBD6E8; }
   .svc-opt input:checked + span{
     border-color:var(--brand-600); background:var(--brand-100);
@@ -492,6 +508,21 @@
               <button type="button" class="btn-inline" id="btnCopyOwnerName">대표자명과 동일</button>
             </div>
           </label>
+
+          <label class="field"><span class="field__label">이메일 주소</span>
+            <input type="email" name="email" id="emailInput" inputmode="email"
+                   autocomplete="email" placeholder="예: ajd1234@gmail.com" enterkeyhint="done" />
+          </label>
+          <p class="file-field__note" style="margin-top:-6px">정산 시스템 등록에 사용됩니다. 지금 모르셔도 괜찮습니다.</p>
+          <button type="button" class="mail-help__btn" id="mailHelpBtn" aria-expanded="false">
+            이메일 주소를 모르시겠어요?
+          </button>
+          <div class="mail-help" id="mailHelp" hidden>
+            <p><b>유튜브를 보고 계시면 이메일 주소가 있습니다.</b></p>
+            <p>휴대폰에서 유튜브 앱을 열고 오른쪽 위 동그란 사진을 누르면
+               <b>@gmail.com</b> 으로 끝나는 주소가 보입니다.</p>
+            <p>찾기 어려우시면 비워두세요. 담당자가 통화할 때 함께 확인해 드립니다.</p>
+          </div>
         </div>
 
         <div class="card">
@@ -993,6 +1024,19 @@
     render();
   })();
 
+  /* ── 이메일 안내 펼치기 ── */
+  (function(){
+    var btn = document.getElementById('mailHelpBtn');
+    var box = document.getElementById('mailHelp');
+    if (!btn || !box) return;
+    btn.addEventListener('click', function(){
+      var open = box.hidden;
+      box.hidden = !open;
+      btn.setAttribute('aria-expanded', open ? 'true' : 'false');
+      btn.textContent = open ? '안내 접기' : '이메일 주소를 모르시겠어요?';
+    });
+  })();
+
   /* ── 서비스 구분에 따라 항목 보이기/숨기기 ── */
   var BIZ = '';
   (function(){
@@ -1448,6 +1492,7 @@
       region: selectedRegions.join(', '),
       service: serviceTypes.join(', '),
       bizType: BIZ,
+      email: (document.getElementById('emailInput').value || '').trim(),
       cleanService: cleanTypes.join(', '),
       storageAvailable: showMove
         ? (document.querySelector('input[name="storageAvailable"]').checked ? '가능' : '불가능')
