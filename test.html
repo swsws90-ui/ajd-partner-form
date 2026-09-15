@@ -232,6 +232,28 @@
   .mail-help__steps{ margin:8px 0 10px; padding-left:20px; }
   .mail-help__steps li{ margin-bottom:16px; }
   .mail-help__steps li:last-child{ margin-bottom:0; }
+  .draft-bar{
+    display:flex; align-items:center; gap:12px; flex-wrap:wrap;
+    max-width:var(--maxw); margin:16px auto 0; padding:14px 18px;
+    border-radius:var(--radius-m); background:var(--brand-100);
+    border:1.5px solid var(--brand-600);
+  }
+  .draft-bar span{ font-size:14px; color:var(--brand-800); font-weight:600; }
+  .draft-bar small{ display:block; margin-top:2px; font-size:12.5px;
+    font-weight:400; color:var(--brand-700); opacity:.85; }
+  .draft-bar__act{ margin-left:auto; display:flex; gap:8px; }
+  .draft-bar__btn{
+    font-family:inherit; font-size:13.5px; font-weight:600; padding:8px 14px;
+    border-radius:var(--radius-s); border:1.5px solid var(--border-color);
+    background:#fff; color:var(--ink-text); cursor:pointer; white-space:nowrap;
+  }
+  .draft-bar__btn--go{ background:var(--brand-600); border-color:var(--brand-600); color:#fff; }
+  @media (max-width:520px){
+    .draft-bar{ margin:12px 16px 0; }
+    .draft-bar__act{ margin-left:0; width:100%; }
+    .draft-bar__btn{ flex:1; }
+  }
+
   .mail-help__shot{
     display:block; width:100%; max-width:290px; height:auto;
     margin:8px 0 4px; border:1px solid var(--border-color);
@@ -1044,6 +1066,98 @@
     render();
   })();
 
+  /* ── 작성 중이던 내용 임시 저장 ──
+     전화가 오거나 화면이 꺼져도 다시 들어오면 이어서 쓸 수 있게 합니다.
+     사진은 용량이 커서 저장하지 않습니다. */
+  var DRAFT_KEY = 'ajd_partner_draft_v1';
+  var DRAFT_TTL = 24 * 60 * 60 * 1000;   // 하루
+  var draftTimer = null, draftReady = false;
+
+  function collectDraft(){
+    var d = { at: Date.now(), fields: {}, checks: {}, regions: [] };
+    form.querySelectorAll('input, select, textarea').forEach(function(el){
+      if (el.type === 'file' || !el.name) return;
+      if (el.type === 'checkbox' || el.type === 'radio') {
+        if (el.checked) {
+          if (!d.checks[el.name]) d.checks[el.name] = [];
+          d.checks[el.name].push(el.value);
+        }
+      } else {
+        if (el.value) d.fields[el.id || el.name] = el.value;
+      }
+    });
+    try { d.regions = selectedRegions.slice(); } catch(e){}
+    return d;
+  }
+
+  function saveDraft(){
+    if (!draftReady) return;
+    clearTimeout(draftTimer);
+    draftTimer = setTimeout(function(){
+      try { localStorage.setItem(DRAFT_KEY, JSON.stringify(collectDraft())); } catch(e){}
+    }, 500);
+  }
+  function clearDraft(){
+    try { localStorage.removeItem(DRAFT_KEY); } catch(e){}
+  }
+  function readDraft(){
+    try {
+      var raw = localStorage.getItem(DRAFT_KEY);
+      if (!raw) return null;
+      var d = JSON.parse(raw);
+      if (!d || !d.at || (Date.now() - d.at) > DRAFT_TTL) { clearDraft(); return null; }
+      var n = Object.keys(d.fields || {}).length + Object.keys(d.checks || {}).length;
+      return n >= 2 ? d : null;     // 한두 칸만 건드린 건 되살리지 않습니다
+    } catch(e){ return null; }
+  }
+
+  function applyDraft(d){
+    Object.keys(d.fields || {}).forEach(function(k){
+      var el = document.getElementById(k) || form.querySelector('[name="'+k+'"]');
+      if (el) el.value = d.fields[k];
+    });
+    Object.keys(d.checks || {}).forEach(function(name){
+      var vals = d.checks[name];
+      form.querySelectorAll('[name="'+name+'"]').forEach(function(el){
+        if (vals.indexOf(el.value) >= 0) el.checked = true;
+      });
+    });
+    (d.regions || []).forEach(function(label){
+      if (selectedRegions.indexOf(label) < 0) selectedRegions.push(label);
+    });
+    try { renderRegionTags(); } catch(e){}
+    // 화면 상태 다시 계산
+    form.querySelectorAll('[name="bizType"]').forEach(function(r){
+      if (r.checked) r.dispatchEvent(new Event('change', { bubbles:true }));
+    });
+    document.querySelectorAll('input[name="serviceType"],input[name="cleanType"]')
+      .forEach(function(c){ c.dispatchEvent(new Event('change', { bubbles:true })); });
+  }
+
+  (function initDraft(){
+    var d = readDraft();
+    if (d) {
+      var bar = document.createElement('div');
+      bar.className = 'draft-bar';
+      bar.innerHTML = '<span>작성하시던 내용이 있습니다. 이어서 하시겠어요?'
+        + '<small>사진은 다시 첨부하셔야 합니다.</small></span>'
+        + '<span class="draft-bar__act">'
+        + '<button type="button" class="draft-bar__btn draft-bar__btn--go">이어서 작성</button>'
+        + '<button type="button" class="draft-bar__btn">새로 작성</button></span>';
+      form.parentNode.insertBefore(bar, form);
+      bar.querySelector('.draft-bar__btn--go').addEventListener('click', function(){
+        applyDraft(d); bar.remove(); draftReady = true;
+      });
+      bar.querySelectorAll('.draft-bar__btn')[1].addEventListener('click', function(){
+        clearDraft(); bar.remove(); draftReady = true;
+      });
+    } else {
+      draftReady = true;
+    }
+    form.addEventListener('input',  saveDraft);
+    form.addEventListener('change', saveDraft);
+  })();
+
   /* ── 이메일 안내 펼치기 ── */
   (function(){
     var btn = document.getElementById('mailHelpBtn');
@@ -1340,6 +1454,35 @@
     }
   }
 
+  /**
+   * 사진 한 장을 목표 용량 안으로 줄입니다.
+   * 서류 여러 장을 한 번에 보낼 때 전체 용량이 커져 제출이 실패하는 것을 막습니다.
+   */
+  var PER_FILE_LIMIT  = 900 * 1024;    // 장당 약 900KB
+  var TOTAL_LIMIT     = 4.5 * 1024 * 1024;  // 전체 약 4.5MB
+
+  function dataUrlBytes(u){ return Math.round((String(u).length - (String(u).indexOf(',')+1)) * 0.75); }
+
+  function shrinkToFit(file){
+    var steps = [[1600, 0.72], [1400, 0.66], [1200, 0.60], [1000, 0.55]];
+    var i = 0;
+    function tryStep(){
+      var st = steps[i];
+      return compressImage(file, st[0], st[1]).then(function(url){
+        if (dataUrlBytes(url) <= PER_FILE_LIMIT || i >= steps.length - 1) return url;
+        i++; return tryStep();
+      });
+    }
+    return tryStep();
+  }
+
+  /** 지금까지 첨부된 사진의 총 용량 */
+  function totalPhotoBytes(){
+    var sum = 0;
+    for (var k in fileState) if (fileState[k]) sum += dataUrlBytes(fileState[k]);
+    return sum;
+  }
+
   function compressImage(file, maxDim, quality){
     return new Promise(function(resolve, reject){
       var reader = new FileReader();
@@ -1374,13 +1517,14 @@
     function handleFile(file){
       if(!file) return;
       status.textContent = '처리중…';
-      compressImage(file, 1600, 0.72).then(function(dataUrl){
+      shrinkToFit(file).then(function(dataUrl){
         fileState[key] = dataUrl;
         status.textContent = '✓ 첨부완료';
         status.classList.add('is-filled');
         previewImg.src = dataUrl;
         previewName.textContent = file.name;
         preview.hidden = false;
+        saveDraft();
       }).catch(function(err){
         status.textContent = '오류, 다시 시도';
         showError('사진을 처리하는 중 문제가 생겼어요: ' + err.message);
@@ -1466,6 +1610,14 @@
       showFieldError(document.getElementById('cleanControl'),
         '청소 종류를 고르지 않으셨어요.',
         '위 칸을 눌러 목록을 펼친 뒤, 수행 가능한 청소 종류를 골라주세요.');
+      return;
+    }
+
+    // 사진 전체 용량이 지나치게 크면 제출이 실패하므로 미리 막습니다
+    if (totalPhotoBytes() > TOTAL_LIMIT) {
+      showFieldError(document.querySelector('.file-field[data-field="bizCert"] .file-field__buttons'),
+        '첨부하신 사진 용량이 너무 큽니다.',
+        '사진을 한두 장 지우고 다시 찍어 올려주세요. 화면 가득 찍으면 용량이 줄어듭니다.');
       return;
     }
 
@@ -1574,8 +1726,10 @@
       .then(function(json){
         setLoading(false);
         if(json && json.result === 'success'){
+          clearDraft();
           successOverlay.classList.add('is-visible');
         } else if(json && json.result === 'unreadable'){
+          clearDraft();
           // 서버에는 저장됐을 수 있으므로 재제출을 유도하지 않습니다.
           successOverlay.classList.add('is-visible');
         } else {
